@@ -1,0 +1,14 @@
+Makefile
+CMakeFiles
+CMakeCache.txt
+*.cmake
+*.exe
+*.rc
+*.dll
+*.a
+*.so
+
+/po/*.mo
+/config.h
+/win/resdefs.h
+/release/tigervnc.iss
