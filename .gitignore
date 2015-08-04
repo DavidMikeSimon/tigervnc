@@ -6,6 +6,7 @@ CMakeCache.txt
 *.rc
 *.dll
 *.a
+*.la
 *.so
 
 /po/*.mo
