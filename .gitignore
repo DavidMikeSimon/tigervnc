@@ -13,3 +13,15 @@ CMakeCache.txt
 /config.h
 /win/resdefs.h
 /release/tigervnc.iss
+
+/release/maketarball
+/tests/conv
+/tests/convperf
+/tests/decperf
+/tests/encperf
+/unix/vncconfig/vncconfig
+/unix/vncpasswd/vncpasswd
+/unix/x0vncserver/x0vncserver
+/vncviewer/vncviewer
+/xorg.build
+/xorg
