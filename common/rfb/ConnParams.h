@@ -102,6 +102,7 @@ namespace rfb {
     int qualityLevel;
     int fineQualityLevel;
     int subsampling;
+    int giiVersion;
 
   private:
 

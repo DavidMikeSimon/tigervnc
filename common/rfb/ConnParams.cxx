@@ -36,7 +36,7 @@ ConnParams::ConnParams()
     supportsSetDesktopSize(false), supportsGII(false), supportsFence(false),
     supportsContinuousUpdates(false),
     compressLevel(2), qualityLevel(-1), fineQualityLevel(-1),
-    subsampling(subsampleUndefined), name_(0), verStrPos(0)
+    subsampling(subsampleUndefined), giiVersion(-1), name_(0), verStrPos(0)
 {
   setName("");
 }

@@ -711,7 +711,6 @@ void VNCSConnectionST::supportsContinuousUpdates()
 
 void VNCSConnectionST::supportsGII()
 {
-  vlog.debug("Enabling GII support");
 }
 
 bool VNCSConnectionST::handleTimeout(Timer* t)

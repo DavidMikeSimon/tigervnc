@@ -1,16 +1,16 @@
 /* Copyright (C) 2002-2005 RealVNC Ltd.  All Rights Reserved.
  * Copyright 2009-2014 Pierre Ossman for Cendio AB
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
@@ -18,6 +18,7 @@
  */
 #include <stdio.h>
 #include <rfb/msgTypes.h>
+#include <rfb/giiMsgTypes.h>
 #include <rdr/InStream.h>
 #include <rfb/Exception.h>
 #include <rfb/util.h>
@@ -74,6 +75,9 @@ void CMsgReader::readMsg()
       break;
     case msgTypeEndOfContinuousUpdates:
       readEndOfContinuousUpdates();
+      break;
+    case msgTypeGII:
+      readGIIMessage();
       break;
     default:
       fprintf(stderr, "unknown message type %d\n", type);
@@ -169,6 +173,47 @@ void CMsgReader::readFence()
 void CMsgReader::readEndOfContinuousUpdates()
 {
   handler->endOfContinuousUpdates();
+}
+
+void CMsgReader::readGIIMessage()
+{
+  rdr::U8 msgSubType;
+  rdr::U16 len;
+
+  msgSubType = is->readU8();
+
+  if (msgSubType < 128) {
+    fprintf(stderr, "Ignoring little-endian GII message\n");
+    // get the little-endian 2-byte length value
+    len = is->readU8();
+    len <<= 8;
+    len = len | is->readU8();
+    is->skip(len);
+    return;
+  }
+
+  len = is->readU16();
+  if (len != 4) {
+    fprintf(stderr, "invalid GII message length %d\n", len);
+    throw Exception("invalid GII message length");
+  }
+
+  switch (msgSubType) {
+  case msgGIISubtypeVersion:
+    rdr::U16 minVersion, maxVersion;
+    maxVersion = is->readU16();
+    minVersion = is->readU16();
+    handler->giiVersionRange(minVersion, maxVersion);
+    break;
+  case msgGIISubtypeDeviceCreation:
+    rdr::U32 deviceOrigin;
+    deviceOrigin = is->readU32();
+    handler->giiDeviceCreationResponse(deviceOrigin);
+    break;
+  default:
+    fprintf(stderr, "unknown GII message subtype %d\n", msgSubType);
+    throw Exception("unknown GII message subtype");
+  }
 }
 
 void CMsgReader::readFramebufferUpdate()
