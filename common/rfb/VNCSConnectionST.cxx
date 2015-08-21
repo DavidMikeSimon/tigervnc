@@ -1,16 +1,16 @@
 /* Copyright (C) 2002-2005 RealVNC Ltd.  All Rights Reserved.
  * Copyright 2009-2015 Pierre Ossman for Cendio AB
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
@@ -178,7 +178,7 @@ void VNCSConnectionST::processMessages()
     inProcessMessages = false;
 
     // If there were anything requiring an update, try to send it here.
-    // We wait until now with this to aggregate responses and to give 
+    // We wait until now with this to aggregate responses and to give
     // higher priority to user actions such as keyboard and pointer events.
     writeFramebufferUpdate();
   } catch (rdr::EndOfStream&) {
@@ -392,7 +392,7 @@ void VNCSConnectionST::authSuccess()
   cp.height = server->pb->height();
   cp.screenLayout = server->screenLayout;
   cp.setName(server->getName());
-  
+
   // - Set the default pixel format
   cp.setPF(server->pb->getPF());
   char buffer[256];
@@ -709,6 +709,10 @@ void VNCSConnectionST::supportsContinuousUpdates()
   writer()->writeEndOfContinuousUpdates();
 }
 
+void VNCSConnectionST::supportsGII()
+{
+  vlog.debug("Enabling GII support");
+}
 
 bool VNCSConnectionST::handleTimeout(Timer* t)
 {
@@ -1134,7 +1138,7 @@ char* VNCSConnectionST::getStartTime()
 {
   char* result = ctime(&startTime);
   result[24] = '\0';
-  return result; 
+  return result;
 }
 
 void VNCSConnectionST::setStatus(int status)
@@ -1162,4 +1166,3 @@ int VNCSConnectionST::getStatus()
     return 2;
   return 4;
 }
-

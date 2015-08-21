@@ -1,17 +1,17 @@
 /* Copyright (C) 2002-2005 RealVNC Ltd.  All Rights Reserved.
  * Copyright (C) 2011 D. R. Commander.  All Rights Reserved.
  * Copyright 2009-2014 Pierre Ossman for Cendio AB
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
@@ -92,6 +92,8 @@ CConn::CConn(const char* vncServerName, network::Socket* socket=NULL)
   cp.supportsDesktopResize = true;
   cp.supportsExtendedDesktopSize = true;
   cp.supportsDesktopRename = true;
+
+  cp.supportsGII = true;
 
   if (customCompressLevel)
     cp.compressLevel = compressLevel;
@@ -282,7 +284,7 @@ void CConn::serverInit()
   CConnection::serverInit();
 
   // If using AutoSelect with old servers, start in FullColor
-  // mode. See comment in autoSelectFormatAndEncoding. 
+  // mode. See comment in autoSelectFormatAndEncoding.
   if (cp.beforeVersion(3, 8) && autoSelect)
     fullColour.setParam(true);
 
@@ -558,16 +560,16 @@ void CConn::autoSelectFormatAndEncoding()
     // old servers.
     return;
   }
-  
+
   // Select best color level
   newFullColour = (kbitsPerSecond > 256);
   if (newFullColour != fullColour) {
-    vlog.info(_("Throughput %d kbit/s - full color is now %s"), 
+    vlog.info(_("Throughput %d kbit/s - full color is now %s"),
               kbitsPerSecond,
               newFullColour ? _("enabled") : _("disabled"));
     fullColour.setParam(newFullColour);
     formatChange = true;
-  } 
+  }
 }
 
 // checkEncodings() sends a setEncodings message if one is needed.
@@ -634,7 +636,7 @@ void CConn::requestNewUpdate()
     writer()->writeFramebufferUpdateRequest(Rect(0, 0, cp.width, cp.height),
                                             !forceNonincremental);
   }
- 
+
   forceNonincremental = false;
 }
 
