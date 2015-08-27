@@ -32,6 +32,11 @@
 namespace rdr { class InStream; }
 
 namespace rfb {
+  struct GIIDevice;
+  struct GIIKeyEvent;
+  struct GIIPointerEvent;
+  struct GIIButtonEvent;
+  struct GIIValuatorEvent;
 
   class SMsgHandler : public InputHandler {
   public:
@@ -40,8 +45,9 @@ namespace rfb {
 
     // The following methods are called as corresponding messages are read.  A
     // derived class should override these methods as desired.  Note that for
-    // the setPixelFormat(), setEncodings() and setDesktopSize() methods, a
-    // derived class must call on to SMsgHandler's methods.
+    // the setPixelFormat(), setEncodings(), setDesktopSize(), and
+    // giiVersionAgreed() methods, a derived class must call on to SMsgHandler's
+    // methods.
 
     virtual void clientInit(bool shared);
 
@@ -53,6 +59,14 @@ namespace rfb {
     virtual void fence(rdr::U32 flags, unsigned len, const char data[]) = 0;
     virtual void enableContinuousUpdates(bool enable,
                                          int x, int y, int w, int h) = 0;
+
+    virtual void giiVersionAgreed(unsigned version);
+    virtual void giiDeviceCreate(const GIIDevice& dev);
+    virtual void giiDeviceDestroy(unsigned devId);
+    virtual void giiKeyEvent(unsigned devId, const GIIKeyEvent& ev);
+    virtual void giiPointerEvent(unsigned devId, const GIIPointerEvent& ev);
+    virtual void giiButtonEvent(unsigned devId, const GIIButtonEvent& ev);
+    virtual void giiValuatorEvent(unsigned devId, const GIIValuatorEvent& ev);
 
     // InputHandler interface
     // The InputHandler methods will be called for the corresponding messages.
@@ -75,8 +89,8 @@ namespace rfb {
     virtual void supportsContinuousUpdates();
 
     // supportsGII is called the first time we detect that the client
-    // wants to use the General Input Interface. A GII version message should
-    // be sent to the client if the server supports GII.
+    // wants to use the General Input Interface. A giiVersionRange(1,1) should
+    // be sent to the client if the server supports it.
     virtual void supportsGII();
 
     ConnParams cp;

@@ -22,6 +22,12 @@
 
 using namespace rfb;
 
+struct GIIDevice;
+struct GIIKeyEvent;
+struct GIIPointerEvent;
+struct GIIButtonEvent;
+struct GIIValuatorEvent;
+
 SMsgHandler::SMsgHandler()
 {
 }
@@ -57,6 +63,35 @@ void SMsgHandler::setEncodings(int nEncodings, const rdr::S32* encodings)
     supportsContinuousUpdates();
   if (cp.supportsGII && firstGII)
     supportsGII();
+}
+
+void SMsgHandler::giiVersionAgreed(unsigned version)
+{
+  cp.giiVersion = version;
+}
+
+void SMsgHandler::giiDeviceCreate(const GIIDevice& dev)
+{
+}
+
+void SMsgHandler::giiDeviceDestroy(unsigned devId)
+{
+}
+
+void SMsgHandler::giiKeyEvent(unsigned devId, const GIIKeyEvent& ev)
+{
+}
+
+void SMsgHandler::giiPointerEvent(unsigned devId, const GIIPointerEvent& ev)
+{
+}
+
+void SMsgHandler::giiButtonEvent(unsigned devId, const GIIButtonEvent& ev)
+{
+}
+
+void SMsgHandler::giiValuatorEvent(unsigned devId, const GIIValuatorEvent& ev)
+{
 }
 
 void SMsgHandler::supportsLocalCursor()

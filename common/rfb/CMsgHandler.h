@@ -57,8 +57,11 @@ namespace rfb {
     virtual void endOfContinuousUpdates();
     virtual void serverInit() = 0;
 
-    virtual void giiVersionRange(rdr::U16 minVersion, rdr::U16 maxVersion);
-    virtual void giiDeviceCreationResponse(rdr::U32 deviceOrigin);
+    // If the client supports GII, then it should respond to this message
+    // with a giiVersionAgreed(1)
+    virtual void giiVersionRange(unsigned minVersion, unsigned maxVersion);
+
+    virtual void giiDeviceCreationResponse(unsigned devId);
 
     virtual void framebufferUpdateStart();
     virtual void framebufferUpdateEnd();

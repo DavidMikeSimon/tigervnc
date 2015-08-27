@@ -1,4 +1,5 @@
 /* Copyright (C) 2002-2005 RealVNC Ltd.  All Rights Reserved.
+ * Copyright 2009-2011 Pierre Ossman for Cendio AB
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,48 +17,17 @@
  * USA.
  */
 
-#ifndef __RDR_RANDOMSTREAM_H__
-#define __RDR_RANDOMSTREAM_H__
+ #include <string.h>
 
-#include <stdio.h>
-#include <rdr/InStream.h>
+ #include <rfb/GIIDevice.h>
 
-#ifdef WIN32
-#include <windows.h>
-#include <wincrypt.h>
-#ifdef WINCRYPT32API
-#define RFB_HAVE_WINCRYPT
-#endif
-#endif
+using namespace rfb;
 
-namespace rdr {
+ GIIValuator::GIIValuator() {
+   memset(longName,0,75);
+   memset(shortName,0,5);
+ }
 
-  class RandomStream : public InStream {
-
-  public:
-
-    RandomStream();
-    virtual ~RandomStream();
-
-    int pos();
-
-  protected:
-    int overrun(int itemSize, int nItems, bool wait);
-
-  private:
-    U8* start;
-    int offset;
-
-    static unsigned int seed;
-#ifdef RFB_HAVE_WINCRYPT
-    HCRYPTPROV provider;
-#endif
-#ifndef WIN32
-    FILE* fp;
-#endif
-
-  };
-
-} // end of namespace rdr
-
-#endif
+ GIIDevice::GIIDevice() {
+   memset(name,0,32);
+ }

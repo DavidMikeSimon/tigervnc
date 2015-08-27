@@ -1,15 +1,15 @@
 /* Copyright (C) 2002-2005 RealVNC Ltd.  All Rights Reserved.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
@@ -111,6 +111,20 @@ namespace rdr {
     inline U32 readOpaque32() { check(4); U32 r; ((U8*)&r)[0] = *ptr++;
                                 ((U8*)&r)[1] = *ptr++; ((U8*)&r)[2] = *ptr++;
                                 ((U8*)&r)[3] = *ptr++; return r; }
+
+    inline S8  readOpaqueS8()  { return readS8(); }
+    inline S16 readOpaqueS16() { return (S16)readOpaque16(); }
+    inline S32 readOpaqueS32() { return (S32)readOpaque32(); }
+
+    // readEU/SN() reads an N-bit integer, byte-swapping if `b` is true
+
+    inline U8  readEU8(bool b)  { return b ? readU8()  : readOpaque8(); }
+    inline U16 readEU16(bool b) { return b ? readU16() : readOpaque16(); }
+    inline U32 readEU32(bool b) { return b ? readU32() : readOpaque32(); }
+
+    inline S8  readES8(bool b)  { return b ? readS8()  : readOpaqueS8(); }
+    inline S16 readES16(bool b) { return b ? readS16() : readOpaqueS16(); }
+    inline S32 readES32(bool b) { return b ? readS32() : readOpaqueS32(); }
 
     // pos() returns the position in the stream.
 

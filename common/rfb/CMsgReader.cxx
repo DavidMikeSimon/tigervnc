@@ -179,36 +179,34 @@ void CMsgReader::readGIIMessage()
 {
   rdr::U8 msgSubType;
   rdr::U16 len;
+  bool bigEndian = false;
 
   msgSubType = is->readU8();
 
-  if (msgSubType < 128) {
-    fprintf(stderr, "Ignoring little-endian GII message\n");
-    // get the little-endian 2-byte length value
-    len = is->readU8();
-    len <<= 8;
-    len = len | is->readU8();
-    is->skip(len);
-    return;
+  if (msgSubType >= 128) {
+    bigEndian = true;
+    msgSubType -= 128;
   }
 
-  len = is->readU16();
+  len = is->readEU16(bigEndian);
   if (len != 4) {
     fprintf(stderr, "invalid GII message length %d\n", len);
     throw Exception("invalid GII message length");
   }
 
   switch (msgSubType) {
-  case msgGIISubtypeVersion:
+  case giiMsgSubtypeVersion:
     rdr::U16 minVersion, maxVersion;
-    maxVersion = is->readU16();
-    minVersion = is->readU16();
-    handler->giiVersionRange(minVersion, maxVersion);
+    maxVersion = is->readEU16(bigEndian);
+    minVersion = is->readEU16(bigEndian);
+    if (minVersion <= 1 && maxVersion >= 1) {
+      handler->giiVersionRange(minVersion, maxVersion);
+    }
     break;
-  case msgGIISubtypeDeviceCreation:
-    rdr::U32 deviceOrigin;
-    deviceOrigin = is->readU32();
-    handler->giiDeviceCreationResponse(deviceOrigin);
+  case giiMsgSubtypeDeviceCreation:
+    rdr::U32 devId;
+    devId = is->readEU32(bigEndian);
+    handler->giiDeviceCreationResponse(devId);
     break;
   default:
     fprintf(stderr, "unknown GII message subtype %d\n", msgSubType);

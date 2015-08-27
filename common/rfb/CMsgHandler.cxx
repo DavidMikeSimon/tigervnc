@@ -75,11 +75,11 @@ void CMsgHandler::endOfContinuousUpdates()
   cp.supportsContinuousUpdates = true;
 }
 
-void CMsgHandler::giiVersionRange(rdr::U16 minVersion, rdr::U16 maxVersion)
+void CMsgHandler::giiVersionRange(unsigned minVersion, unsigned maxVersion)
 {
 }
 
-void CMsgHandler::giiDeviceCreationResponse(rdr::U32 deviceOrigin)
+void CMsgHandler::giiDeviceCreationResponse(unsigned devId)
 {
 }
 

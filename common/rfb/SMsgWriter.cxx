@@ -1,17 +1,17 @@
 /* Copyright (C) 2002-2005 RealVNC Ltd.  All Rights Reserved.
  * Copyright (C) 2011 D. R. Commander.  All Rights Reserved.
  * Copyright 2009-2014 Pierre Ossman for Cendio AB
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
@@ -27,6 +27,7 @@
 #include <rfb/Encoder.h>
 #include <rfb/SMsgWriter.h>
 #include <rfb/LogWriter.h>
+#include <rfb/giiMsgTypes.h>
 
 using namespace rfb;
 
@@ -111,6 +112,25 @@ void SMsgWriter::writeEndOfContinuousUpdates()
     throw Exception("Client does not support continuous updates");
 
   startMsg(msgTypeEndOfContinuousUpdates);
+  endMsg();
+}
+
+void SMsgWriter::writeGIIVersionRange(unsigned minVersion, unsigned maxVersion)
+{
+  startMsg(msgTypeGII);
+  os->writeU8(giiMsgSubtypeVersion + 128);
+  os->writeU16(4);
+  os->writeU16(maxVersion);
+  os->writeU16(minVersion);
+  endMsg();
+}
+
+void SMsgWriter::writeGIIDeviceCreationResponse(unsigned devId)
+{
+  startMsg(msgTypeGII);
+  os->writeU8(giiMsgSubtypeDeviceCreation + 128);
+  os->writeU16(4);
+  os->writeU32(devId);
   endMsg();
 }
 

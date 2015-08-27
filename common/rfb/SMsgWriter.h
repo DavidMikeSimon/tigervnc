@@ -1,16 +1,16 @@
 /* Copyright (C) 2002-2005 RealVNC Ltd.  All Rights Reserved.
  * Copyright 2009-2014 Pierre Ossman for Cendio AB
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
@@ -63,6 +63,16 @@ namespace rfb {
     // updates mode.
     void writeEndOfContinuousUpdates();
 
+    // Use this method to ask the client to begin sending GII messages; only
+    // call it if the client specified the GII pseudo-encoding (e.g. call it
+    // from SMsgHandler::supportsGII). For now, set both minVersion and
+    // maxVersion to 1; protocol doesn't (yet) specify what happens otherwise
+    void writeGIIVersionRange(unsigned minVersion, unsigned maxVersion);
+
+    // Use this method to respond to client GII device creation requests. If
+    // device creation failed, reply with a devId of 0.
+    void writeGIIDeviceCreationResponse(unsigned devId);
+
     // writeSetDesktopSize() won't actually write immediately, but will
     // write the relevant pseudo-rectangle as part of the next update.
     bool writeSetDesktopSize();
@@ -77,7 +87,7 @@ namespace rfb {
     bool writeSetDesktopName();
 
     // Like setDesktopSize, we can't just write out a cursor message
-    // immediately. 
+    // immediately.
     bool writeSetCursor();
     bool writeSetXCursor();
 
