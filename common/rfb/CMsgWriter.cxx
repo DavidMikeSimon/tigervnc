@@ -27,6 +27,8 @@
 #include <rfb/ConnParams.h>
 #include <rfb/Decoder.h>
 #include <rfb/CMsgWriter.h>
+#include <rfb/giiMsgTypes.h>
+#include <rfb/GIIEvent.h>
 
 using namespace rfb;
 
@@ -188,6 +190,32 @@ void CMsgWriter::writeEnableContinuousUpdates(bool enable,
   os->writeU16(y);
   os->writeU16(w);
   os->writeU16(h);
+
+  endMsg();
+}
+
+void CMsgWriter::writeGIIEvents(const GIIEvent* evs, unsigned count)
+{
+  unsigned i;
+
+  if (cp->giiVersion != 1)
+    throw Exception("GII protocol not established with server");
+
+  rdr::U16 len = 0;
+  for (i = 0; i < count; ++i) {
+    len += evs[i].getWriteLength();
+  }
+
+  startMsg(msgTypeGII);
+
+  os->writeU8(giiMsgSubtypeInjectEvent);
+  os->writeU16(len);
+
+  for (i = 0; i < count; ++i) {
+    evs[i].write(os);
+    os->writeU8(evs[i].getWriteLength());
+    evs[i].write(os);
+  }
 
   endMsg();
 }

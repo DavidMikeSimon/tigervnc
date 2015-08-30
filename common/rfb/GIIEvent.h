@@ -21,7 +21,11 @@
 #ifndef __RFB_GIIEVENT_H__
 #define __RFB_GIIEVENT_H__
 
+#include <vector>
+
 #include <rfb/GIIDevice.h>
+
+namespace rdr { class OutStream; }
 
 namespace rfb {
   const unsigned int giiModMaskShift  = 1 << 0;
@@ -36,18 +40,28 @@ namespace rfb {
   const unsigned int giiModMaskScroll = 1 << 9;
 
   struct GIIEvent {
-    //virtual ~GIIEvent =0 {};
+    unsigned int devId;
+    GIIEvent() {}
+    GIIEvent(unsigned _devId) : devId(_devId) {}
+    virtual unsigned int getWriteLength() const =0;
+    virtual void write(rdr::OutStream* os) const =0;
   };
 
   struct GIIKeyEvent : public GIIEvent {
-    GIIKeyEvent(bool down, unsigned modMask, unsigned sym,
-                unsigned label, unsigned button) :
+    GIIKeyEvent() {}
+    GIIKeyEvent(unsigned _devId, bool _down, unsigned _modMask, unsigned _sym,
+                unsigned _label, unsigned _button) :
+                GIIEvent(_devId), down(_down), modMask(_modMask), sym(_sym),
+                label(_label), button(_button) {}
 
     bool down;
     unsigned int modMask;
     unsigned int sym;
     unsigned int label;
     unsigned int button;
+
+    virtual unsigned int getWriteLength() const;
+    virtual void write(rdr::OutStream* os) const;
   };
 
   struct GIIPointerEvent : public GIIEvent {
@@ -56,30 +70,28 @@ namespace rfb {
     int y; // Axis 1
     int z; // Axis 2
     int wheel; // Axis 3 (generally not actually used for mouse wheel...)
+
+    virtual unsigned int getWriteLength() const;
+    virtual void write(rdr::OutStream* os) const;
   };
 
   struct GIIButtonEvent : public GIIEvent {
     bool down;
     unsigned int buttonNum;
+
+    virtual unsigned int getWriteLength() const;
+    virtual void write(rdr::OutStream* os) const;
   };
 
   struct GIIValuatorEvent : public GIIEvent {
     bool absolute;
-    unsigned int valuatorNum;
-    int value;
+    unsigned int firstValuatorNum;
+    std::vector<int> values;
+
+    virtual unsigned int getWriteLength() const;
+    virtual void write(rdr::OutStream* os) const;
   };
 
-  struct GIIGenericEvent {
-    enum {GII_EV_KEY, GII_EV_POINTER, GII_EV_BUTTON, GII_EV_VALUATOR} type;
-    union {
-      GIIKeyEvent keyEvent;
-      GIIPointerEvent pointerEvent;
-      GIIButtonEvent buttonEvent;
-      GIIValuatorEvent valuatorEvent;
-    };
-
-    GIIEvent(const GIIKeyEvent&)
-  };
 }
 
 #endif // __RFB_GIIEVENT_H__

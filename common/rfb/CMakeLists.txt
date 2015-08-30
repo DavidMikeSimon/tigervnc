@@ -20,6 +20,7 @@ set(RFB_SOURCES
   EncodeManager.cxx
   Encoder.cxx
   GIIDevice.cxx
+  GIIEvent.cxx
   HTTPServer.cxx
   HextileDecoder.cxx
   HextileEncoder.cxx

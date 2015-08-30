@@ -17,17 +17,16 @@
  * USA.
  */
 
- #include <string.h>
-
- #include <rfb/GIIDevice.h>
+#include <string.h>
+#include <rfb/GIIDevice.h>
 
 using namespace rfb;
 
- GIIValuator::GIIValuator() {
-   memset(longName,0,75);
-   memset(shortName,0,5);
- }
+GIIValuator::GIIValuator() {
+ memset(longName,0,75);
+ memset(shortName,0,5);
+}
 
- GIIDevice::GIIDevice() {
-   memset(name,0,32);
- }
+GIIDevice::GIIDevice() {
+ memset(name,0,32);
+}

@@ -164,20 +164,20 @@ void SMsgReader::readEnableContinuousUpdates()
 
 void SMsgReader::readGIIMessage()
 {
-  rdr::U8 msgSub;
+  rdr::U8 msgSubtype;
   rdr::U16 len;
   bool bigEndian = false;
 
-  msgSub = is->readU8();
+  msgSubtype = is->readU8();
 
-  if (msgSub >= 128) {
+  if (msgSubtype >= giiMsgBigEndianOffset) {
     bigEndian = true;
-    msgSub -= 128;
+    msgSubtype -= giiMsgBigEndianOffset;
   }
 
   len = is->readEU16(bigEndian);
 
-  switch (msgSub) {
+  switch (msgSubtype) {
   case giiMsgSubtypeInjectEvent:
     readGIISubInjectEvents(len, bigEndian);
     break;
@@ -191,8 +191,8 @@ void SMsgReader::readGIIMessage()
     readGIISubDeviceDestroy(len, bigEndian);
     break;
   default:
-    fprintf(stderr, "unknown GII message Sub %d\n", msgSub);
-    throw Exception("unknown GII message Sub");
+    fprintf(stderr, "unknown GII message Subtype %d\n", msgSubtype);
+    throw Exception("unknown GII message Subtype");
   }
 }
 
@@ -205,21 +205,21 @@ void SMsgReader::readGIISubInjectEvents(rdr::U16 len, bool bigEndian)
     eventType = is->readU8();
 
     switch (eventType) {
-      case giiMsgEventKeyPress:
-      case giiMsgEventKeyRelease:
-      case giiMsgEventKeyRepeat:
+      case giiEventKeyPress:
+      case giiEventKeyRelease:
+      case giiEventKeyRepeat:
         readGIISubKeyEvent(eventSize, eventType, bigEndian);
         break;
-      case giiMsgEventPointerRelative:
-      case giiMsgEventPointerAbsolute:
+      case giiEventPointerRelative:
+      case giiEventPointerAbsolute:
         readGIISubPointerEvent(eventSize, eventType, bigEndian);
         break;
-      case giiMsgEventButtonPress:
-      case giiMsgEventButtonRelease:
+      case giiEventButtonPress:
+      case giiEventButtonRelease:
         readGIISubButtonEvent(eventSize, eventType, bigEndian);
         break;
-      case giiMsgEventValuatorRelative:
-      case giiMsgEventValuatorAbsolute:
+      case giiEventValuatorRelative:
+      case giiEventValuatorAbsolute:
         readGIISubValuatorEvent(eventSize, eventType, bigEndian);
         break;
       default:
@@ -227,7 +227,7 @@ void SMsgReader::readGIISubInjectEvents(rdr::U16 len, bool bigEndian)
         throw Exception("unknown GII input event type");
     }
 
-    bytesRead += eventSize;
+    bytesRead += eventSize + 2; // two bytes for the ev size and type
     if (bytesRead > len) {
       fprintf(stderr, "overflow on GII event list\n");
       throw Exception("overflow on GII event list\n");
@@ -244,18 +244,16 @@ void SMsgReader::readGIISubKeyEvent(rdr::U16 len, rdr::U8 eType,
   }
   is->skip(2); // padding
 
-  rdr::U32 devId;
   GIIKeyEvent ev;
   // Treat key-repeat as key-down, spec isn't very clear on key-repeat...
-  ev.down = (eType != giiMsgEventKeyRelease);
-
-  devId = is->readEU32(bigEndian);
+  ev.down = (eType != giiEventKeyRelease);
+  ev.devId = is->readEU32(bigEndian);
   ev.modMask = is->readEU32(bigEndian);
   ev.sym = is->readEU32(bigEndian);
   ev.label = is->readEU32(bigEndian);
   ev.button = is->readEU32(bigEndian);
 
-  handler->giiKeyEvent(devId, ev);
+  handler->giiKeyEvent(ev);
 }
 
 void SMsgReader::readGIISubPointerEvent(rdr::U16 len, rdr::U8 eType,
@@ -267,17 +265,15 @@ void SMsgReader::readGIISubPointerEvent(rdr::U16 len, rdr::U8 eType,
   }
   is->skip(2); // padding
 
-  rdr::U32 devId;
   GIIPointerEvent ev;
-  ev.absolute = (eType == giiMsgEventPointerAbsolute);
-
-  devId = is->readEU32(bigEndian);
+  ev.absolute = (eType == giiEventPointerAbsolute);
+  ev.devId = is->readEU32(bigEndian);
   ev.x = is->readES32(bigEndian);
   ev.y = is->readES32(bigEndian);
   ev.z = is->readES32(bigEndian);
   ev.wheel = is->readES32(bigEndian);
 
-  handler->giiPointerEvent(devId, ev);
+  handler->giiPointerEvent(ev);
 }
 
 void SMsgReader::readGIISubButtonEvent(rdr::U16 len, rdr::U8 eType,
@@ -289,14 +285,12 @@ void SMsgReader::readGIISubButtonEvent(rdr::U16 len, rdr::U8 eType,
   }
   is->skip(2); // padding
 
-  rdr::U32 devId;
   GIIButtonEvent ev;
-  ev.down = (eType == giiMsgEventButtonPress);
-
-  devId = is->readEU32(bigEndian);
+  ev.down = (eType == giiEventButtonPress);
+  ev.devId = is->readEU32(bigEndian);
   ev.buttonNum = is->readEU32(bigEndian);
 
-  handler->giiButtonEvent(devId, ev);
+  handler->giiButtonEvent(ev);
 }
 
 void SMsgReader::readGIISubValuatorEvent(rdr::U16 len, rdr::U8 eType,
@@ -308,22 +302,20 @@ void SMsgReader::readGIISubValuatorEvent(rdr::U16 len, rdr::U8 eType,
   }
   is->skip(2); // padding
 
-  rdr::U32 devId, valuatorCount;
   GIIValuatorEvent ev;
-  ev.absolute = (eType == giiMsgEventValuatorAbsolute);
-
-  devId = is->readEU32(bigEndian);
-  ev.valuatorNum = is->readEU32(bigEndian);
-  valuatorCount = is->readEU32(bigEndian);
+  ev.absolute = (eType == giiEventValuatorAbsolute);
+  ev.devId = is->readEU32(bigEndian);
+  ev.firstValuatorNum = is->readEU32(bigEndian);
+  rdr::U32 valuatorCount = is->readEU32(bigEndian);
   if (len != 14 + valuatorCount*4) {
     fprintf(stderr, "invalid GII valuator event message length %d\n", len);
     throw Exception("invalid GII valuator event message length");
   }
+  ev.values.resize(valuatorCount);
   for (unsigned int i = 0; i < valuatorCount; ++i) {
-    ev.value = is->readES32(bigEndian);
-    ++ev.valuatorNum;
-    handler->giiValuatorEvent(devId, ev);
+    ev.values[i] = is->readES32(bigEndian);
   }
+  handler->giiValuatorEvent(ev);
 }
 
 void SMsgReader::readGIISubVersionAgreed(rdr::U16 len, bool bigEndian)

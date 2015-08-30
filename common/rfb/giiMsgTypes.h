@@ -31,16 +31,19 @@ namespace rfb {
   // message from client to destroy an input device
   const unsigned int giiMsgSubtypeDeviceDestruction = 3;
 
-  // sub-subtypes of InjectEvent
-  const unsigned int giiMsgEventKeyPress = 5;
-  const unsigned int giiMsgEventKeyRelease = 6;
-  const unsigned int giiMsgEventKeyRepeat = 7;
-  const unsigned int giiMsgEventPointerRelative = 8;
-  const unsigned int giiMsgEventPointerAbsolute = 9;
-  const unsigned int giiMsgEventButtonPress = 10;
-  const unsigned int giiMsgEventButtonRelease = 11;
-  const unsigned int giiMsgEventValuatorRelative = 12;
-  const unsigned int giiMsgEventValuatorAbsolute = 13;
+  // add this to a subtype above to indicate big endian data in the message
+  const unsigned int giiMsgBigEndianOffset = 128;
+
+  // types of events within InjectEvent message
+  const unsigned int giiEventKeyPress = 5;
+  const unsigned int giiEventKeyRelease = 6;
+  const unsigned int giiEventKeyRepeat = 7;
+  const unsigned int giiEventPointerRelative = 8;
+  const unsigned int giiEventPointerAbsolute = 9;
+  const unsigned int giiEventButtonPress = 10;
+  const unsigned int giiEventButtonRelease = 11;
+  const unsigned int giiEventValuatorRelative = 12;
+  const unsigned int giiEventValuatorAbsolute = 13;
 }
 
 #endif // __RFB_GIIMSGTYPES_H

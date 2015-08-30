@@ -78,19 +78,19 @@ void SMsgHandler::giiDeviceDestroy(unsigned devId)
 {
 }
 
-void SMsgHandler::giiKeyEvent(unsigned devId, const GIIKeyEvent& ev)
+void SMsgHandler::giiKeyEvent(const GIIKeyEvent& ev)
 {
 }
 
-void SMsgHandler::giiPointerEvent(unsigned devId, const GIIPointerEvent& ev)
+void SMsgHandler::giiPointerEvent(const GIIPointerEvent& ev)
 {
 }
 
-void SMsgHandler::giiButtonEvent(unsigned devId, const GIIButtonEvent& ev)
+void SMsgHandler::giiButtonEvent(const GIIButtonEvent& ev)
 {
 }
 
-void SMsgHandler::giiValuatorEvent(unsigned devId, const GIIValuatorEvent& ev)
+void SMsgHandler::giiValuatorEvent(const GIIValuatorEvent& ev)
 {
 }
 

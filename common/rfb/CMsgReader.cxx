@@ -183,9 +183,9 @@ void CMsgReader::readGIIMessage()
 
   msgSubType = is->readU8();
 
-  if (msgSubType >= 128) {
+  if (msgSubType >= giiMsgBigEndianOffset) {
     bigEndian = true;
-    msgSubType -= 128;
+    msgSubType -= giiMsgBigEndianOffset;
   }
 
   len = is->readEU16(bigEndian);

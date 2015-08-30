@@ -116,15 +116,15 @@ namespace rdr {
     inline S16 readOpaqueS16() { return (S16)readOpaque16(); }
     inline S32 readOpaqueS32() { return (S32)readOpaque32(); }
 
-    // readEU/SN() reads an N-bit integer, byte-swapping if `b` is true
+    // readEU/SN() reads an N-bit integer, byte-swapping if `big` is false
 
-    inline U8  readEU8(bool b)  { return b ? readU8()  : readOpaque8(); }
-    inline U16 readEU16(bool b) { return b ? readU16() : readOpaque16(); }
-    inline U32 readEU32(bool b) { return b ? readU32() : readOpaque32(); }
+    inline U8  readEU8(bool big)  { return big ? readOpaque8()  : readU8(); }
+    inline U16 readEU16(bool big) { return big ? readOpaque16() : readU16(); }
+    inline U32 readEU32(bool big) { return big ? readOpaque32() : readU32(); }
 
-    inline S8  readES8(bool b)  { return b ? readS8()  : readOpaqueS8(); }
-    inline S16 readES16(bool b) { return b ? readS16() : readOpaqueS16(); }
-    inline S32 readES32(bool b) { return b ? readS32() : readOpaqueS32(); }
+    inline S8  readES8(bool big)  { return big ? readOpaqueS8()  : readS8(); }
+    inline S16 readES16(bool big) { return big ? readOpaqueS16() : readS16(); }
+    inline S32 readES32(bool big) { return big ? readOpaqueS32() : readS32(); }
 
     // pos() returns the position in the stream.
 

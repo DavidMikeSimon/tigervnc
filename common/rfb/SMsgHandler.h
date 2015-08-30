@@ -63,10 +63,10 @@ namespace rfb {
     virtual void giiVersionAgreed(unsigned version);
     virtual void giiDeviceCreate(const GIIDevice& dev);
     virtual void giiDeviceDestroy(unsigned devId);
-    virtual void giiKeyEvent(unsigned devId, const GIIKeyEvent& ev);
-    virtual void giiPointerEvent(unsigned devId, const GIIPointerEvent& ev);
-    virtual void giiButtonEvent(unsigned devId, const GIIButtonEvent& ev);
-    virtual void giiValuatorEvent(unsigned devId, const GIIValuatorEvent& ev);
+    virtual void giiKeyEvent(const GIIKeyEvent& ev);
+    virtual void giiPointerEvent(const GIIPointerEvent& ev);
+    virtual void giiButtonEvent(const GIIButtonEvent& ev);
+    virtual void giiValuatorEvent(const GIIValuatorEvent& ev);
 
     // InputHandler interface
     // The InputHandler methods will be called for the corresponding messages.

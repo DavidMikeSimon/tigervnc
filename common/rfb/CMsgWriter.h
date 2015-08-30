@@ -39,7 +39,7 @@ namespace rfb {
   struct GIIPointerEvent;
   struct GIIButtonEvent;
   struct GIIValuatorEvent;
-  class GIIGenericEvent;
+  class GIIEvent;
 
   class CMsgWriter : public InputHandler {
   public:
@@ -56,8 +56,8 @@ namespace rfb {
     void writeFramebufferUpdateRequest(const Rect& r,bool incremental);
     void writeEnableContinuousUpdates(bool enable, int x, int y, int w, int h);
 
-    void writeGIIEvent(unsigned devId, const GIIEvent& ev);
-    void writeGIIEvents(unsigned devId, const GIIEvent* evs, unsigned count);
+    void writeGIIEvents(const GIIEvent* evs, unsigned count);
+    void writeGIIEvent(const GIIEvent& ev) { writeGIIEvents(&ev, 1); }
 
     void writeFence(rdr::U32 flags, unsigned len, const char data[]);
 

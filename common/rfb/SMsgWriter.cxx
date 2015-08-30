@@ -117,8 +117,11 @@ void SMsgWriter::writeEndOfContinuousUpdates()
 
 void SMsgWriter::writeGIIVersionRange(unsigned minVersion, unsigned maxVersion)
 {
+  if (!cp->supportsGII)
+    throw Exception("Client does not support GII");
+
   startMsg(msgTypeGII);
-  os->writeU8(giiMsgSubtypeVersion + 128);
+  os->writeU8(giiMsgSubtypeVersion);
   os->writeU16(4);
   os->writeU16(maxVersion);
   os->writeU16(minVersion);
@@ -127,8 +130,11 @@ void SMsgWriter::writeGIIVersionRange(unsigned minVersion, unsigned maxVersion)
 
 void SMsgWriter::writeGIIDeviceCreationResponse(unsigned devId)
 {
+  if (cp->giiVersion != 1)
+    throw Exception("GII protocol not established with client");
+
   startMsg(msgTypeGII);
-  os->writeU8(giiMsgSubtypeDeviceCreation + 128);
+  os->writeU8(giiMsgSubtypeDeviceCreation);
   os->writeU16(4);
   os->writeU32(devId);
   endMsg();
